@@ -1,5 +1,5 @@
 # Specify the packages of interest
-packages = c("shiny", "rStrava",
+packages = c("shiny",
              "osmdata", "tidyverse",
              "sf","raster","rgdal","yaml","httr",
              "jsonlite","Thermimage",
@@ -15,6 +15,15 @@ package.check <- lapply(
     }
   }
 )
+
+# rStrava
+packs <- as.data.frame(installed.packages())
+if ("rStrava" %in% packs$Package) {
+  library(rStrava)
+} else {
+  devtools::install_github('fawda123/rStrava')
+  library(rStrava)
+}
 
 # Construct user interface
 ui <- fluidPage(
