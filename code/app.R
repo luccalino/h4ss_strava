@@ -16,18 +16,21 @@ ui <- fluidPage(
   
   titlePanel("Strava Visuals"),
   
-  p('TBD'),
-  
   sidebarPanel(
+    tags$div(class="header", checked = NA,
+             tags$p('Hello! Welcome to this app, before you begin there will be a minor detail which needs to be set up first: The Strava API. Rest assured it takes less than 2 minutes!'),
+             tags$a(href = "https://luccalino.github.io", "Click Here!")
+    ),
+    br(),
     textInput("app_name", "Application name", value = "", width = NULL, placeholder = NULL),
     textInput("id", "Client ID", value = "", width = NULL, placeholder = NULL),
     textInput("secret", "Client secret", value = "", width = NULL, placeholder = NULL),
     textInput("place", "Place", value = "e.g. Zurich, Switzerland", width = NULL, placeholder = NULL),
-    checkboxGroupInput("features", "Features:", 
+    checkboxGroupInput("features", "Add your features:", 
                        c("Buildings" = "buildings",
-                         "Roads" = "roads"), 
-                       selected = "Buildings"),
-    actionButton("gd","Visualize my journey", icon("arrow-circle-down"), 
+                         "Roads" = "roads"),
+                       selected = ""),
+    actionButton("gd","Get data & visualize!", icon("arrow-circle-down"), 
                  style = "color: #fff; background-color: #fc4c02; border-color: #2e6da4")
   ),
   
@@ -44,7 +47,7 @@ server <- function(input, output) {
   observeEvent(input$gd, {
     show_modal_gif(
       src = "https://media.giphy.com/media/kUTME7ABmhYg5J3psM/giphy.gif",
-      text = "Getting data. This can take a while..."
+      text = "Getting activity data. This can take a while..."
     )
     
     # Create the authentication token
@@ -76,12 +79,10 @@ server <- function(input, output) {
     proj4string(poly_bb_flipped) <- CRS("+init=epsg:4326") 
     poly_bb_flipped <- spTransform(poly_bb_flipped, CRS.new)
     poly_bb_flipped <- as.matrix(as.data.frame(poly_bb_flipped))
-    # X dimension
-    poly_bb_flipped[1,1] <- poly_bb_flipped[1,1]-7000
-    poly_bb_flipped[2,1] <- poly_bb_flipped[2,1]+7000
-    # Y dimension
-    poly_bb_flipped[1,2] <- poly_bb_flipped[1,2]-750
-    poly_bb_flipped[2,2] <- poly_bb_flipped[2,2]+750
+    poly_bb_flipped[1,1] <- poly_bb_flipped[1,1] # X dimension
+    poly_bb_flipped[2,1] <- poly_bb_flipped[2,1] # X dimension
+    poly_bb_flipped[1,2] <- poly_bb_flipped[1,2] # Y dimension
+    poly_bb_flipped[2,2] <- poly_bb_flipped[2,2] # Y dimension
     poly_bb_4326 <- data.frame(poly_bb_flipped)
     coordinates(poly_bb_4326) <- c("x", "y")
     proj4string(poly_bb_4326) <- CRS.new 
@@ -116,64 +117,77 @@ server <- function(input, output) {
     polyline_data <- spTransform(polyline_data, CRS.new)
     polyline_data <- as.data.frame(polyline_data)
     
+    remove_modal_gif()
+    
+    show_modal_gif(
+      src = "https://media.giphy.com/media/kUTME7ABmhYg5J3psM/giphy.gif",
+      text = "Activity data check.\nGetting features. This can take a while..."
+    )
+    
     # Loading features
-    if (input$features == "buildings") {
+    if (length(input$features) == 1 & input$features[1] == "buildings") {
       buildings <- opq(bbox = poly_bb_4326, timeout = 120) %>% 
         add_osm_feature(key = 'building') %>%
         osmdata_sf() 
       buildings_polylines <- buildings$osm_polygons
       buildings_polylines <- st_transform(buildings_polylines, crs = st_crs(CRS.new))
-    } else {
-      paste("Skipped buildings")
-    }
+    } 
     
-    if (input$features == "roads") {
+    if (length(input$features) == 1 & input$features[1] == "roads") {
       roads <- opq(bbox = poly_bb_4326, timeout = 120) %>% 
         add_osm_feature(key = 'highway') %>%
         osmdata_sf() 
       roads_polylines <- roads$osm_lines
       roads_polylines <- st_transform(roads_polylines, crs = st_crs(CRS.new))
-    } else {
-      paste("Skipped roads")
     }
+    
+    if (length(input$features) == 2) {
+      buildings <- opq(bbox = poly_bb_4326, timeout = 120) %>% 
+        add_osm_feature(key = 'building') %>%
+        osmdata_sf() 
+      buildings_polylines <- buildings$osm_polygons
+      buildings_polylines <- st_transform(buildings_polylines, crs = st_crs(CRS.new))
+      roads <- opq(bbox = poly_bb_4326, timeout = 120) %>% 
+        add_osm_feature(key = 'highway') %>%
+        osmdata_sf() 
+      roads_polylines <- roads$osm_lines
+      roads_polylines <- st_transform(roads_polylines, crs = st_crs(CRS.new))
+    } 
     
     remove_modal_gif()
     
-    output$plot1 <- renderPlot({
+    output$plot1 <- renderPlot(
+      width = function() 750,
+      height = function() 1000,
+      res = 95,
+      {
         
         ## Plot dimension
-        xdim <- c(poly_bb_flipped[1,1]+1250, poly_bb_flipped[2,1]-1250)
-        ydim <- c(poly_bb_flipped[1,2]+1000, poly_bb_flipped[2,2]-1000)
+        xdim <- c(poly_bb_flipped[1,1], poly_bb_flipped[2,1])
+        ydim <- c(poly_bb_flipped[1,2], poly_bb_flipped[2,2])
         
         ## Plot
         p <- ggplot() +
-          #geom_sf(data = scree_polygone, fill = "grey", colour = NA) +
-          #geom_sf(data = landuse_polygone, fill = "grey", colour = NA) +
-          #geom_raster(data = relief_reduced, aes(x = x, y = y, alpha = value)) +
-          #scale_alpha(name = "", range = c(0.6, 0), guide = "none") +   
-          #geom_sf(data = water_multipolygon, fill = "#a0bcdf", colour = NA) +
-          #geom_sf(data = river_lines, colour = "#a0bcdf", size = ifelse(river_lines$role == "main_stream", 1, 0.25)) +
-          #geom_sf(data = roads_polylines, colour = "black", size = 0.2, alpha = 0.2) +
-          #geom_sf(data = rail_polylines, colour = "black", size = 0.4, alpha = 0.3) +
-          #geom_sf(data = lift_polylines, colour = "black", size = 0.4, alpha = 0.3) +
-          #geom_sf(data = buildings_polylines, fill = "black", colour = NA) +
           geom_path(data = polyline_data, aes(x = lon, y = lat, group = id), 
                     color = "red3", alpha = 0.5, size = 0.175, lineend = "round", show.legend = FALSE) +
           coord_sf(xlim = xdim, ylim = ydim) + 
           theme_void()
         
-        if (input$features == "buildings" & input$features != "roads") {
-          p + 
-            geom_sf(data = buildings_polylines, fill = "black", colour = NA)
-        } else if (input$features != "buildings" & input$features == "roads") {
-          p + 
-            geom_sf(data = roads_polylines, fill = "black", colour = NA) 
-        } else if (input$features == "raods" & input$features == "buildings") {
-          p + 
+        if (length(input$features) == 1 & input$features[1] == "buildings") {
+         p <- p + 
+           geom_sf(data = buildings_polylines, fill = "black", colour = NA) +
+           coord_sf(xlim = xdim, ylim = ydim)
+        } else if (length(input$features) == 1 & input$features[1] == "roads") {
+          p <- p + 
+            geom_sf(data = roads_polylines, fill = "black", colour = NA) +
+            coord_sf(xlim = xdim, ylim = ydim)
+        } else if (length(input$features) == 2) {
+          p <- p + 
             geom_sf(data = roads_polylines, colour = "black", size = 0.2, alpha = 0.2) +
-            geom_sf(data = buildings_polylines, fill = "black", colour = NA)
+            geom_sf(data = buildings_polylines, fill = "black", colour = NA) +
+            coord_sf(xlim = xdim, ylim = ydim)
         } else {
-          paste("")
+          p
         }
         
         p
