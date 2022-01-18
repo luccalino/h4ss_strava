@@ -2,9 +2,9 @@
 This repo is the working folder for the course assignment from Wan Ri Ho and Lucca Zachmann.
 
 # Project idea
-- :white_check_mark: Get data from the Strava API
-- :white_check_mark: Build simple shiny app to visualise spatial tracks
-- :x: Publish the app and let loggers use it (not yet achieved)
+- Get data from the Strava API :white_check_mark:
+- :white_check_mark: Build simple shiny app to visualise spatial tracks :white_check_mark:
+- Publish the app and let loggers use it (:x: not yet achieved)
 
 # Requirements (user-side)
 A Strava API needs to be set up prior to using the app. 
@@ -18,3 +18,8 @@ A Strava API needs to be set up prior to using the app.
 - App can be used anywhere in the world
 - English language only (can be easily extended)
 - Riding and running activities (other actives can easily be included)
+
+# Exemplary plot
+This is how a plot can look like (for Zurich in this case).
+
+![exemplary_plot](/plots/app_output.png)
