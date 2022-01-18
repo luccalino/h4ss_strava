@@ -5,6 +5,10 @@ packages = c("shiny","rStrava",
              "jsonlite","Thermimage",
              "shinycssloaders","shinybusy")
 
+install.packages('devtools')
+devtools::install_github('fawda123/rStrava')
+
+
 # Load or install & load all
 package.check <- lapply(
   packages,
