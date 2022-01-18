@@ -1,17 +1,22 @@
-library(shiny)
-library(rStrava)
-library(osmdata)
-library(tidyverse)
-library(sf)
-library(raster)
-library(rgdal)
-library(yaml)
-library(httr)
-library(jsonlite)
-library(Thermimage)
-library(shinycssloaders)
-library(shinybusy)
+# Specify the packages of interest
+packages = c("shiny", "rStrava",
+             "osmdata", "tidyverse",
+             "sf","raster","rgdal","yaml","httr",
+             "jsonlite","Thermimage",
+             "shinycssloaders","shinybusy")
 
+# Load or install & load all
+package.check <- lapply(
+  packages,
+  FUN = function(x) {
+    if (!require(x, character.only = TRUE)) {
+      install.packages(x, dependencies = TRUE)
+      library(x, character.only = TRUE)
+    }
+  }
+)
+
+# Construct user interface
 ui <- fluidPage(
   
   titlePanel("Strava Visuals"),
@@ -42,6 +47,7 @@ ui <- fluidPage(
   
 )
 
+# Construct server
 server <- function(input, output) {
   
   observeEvent(input$gd, {
@@ -196,4 +202,5 @@ server <- function(input, output) {
   })
 }
 
+# Bring user interface and server together
 shinyApp(ui = ui, server = server)
