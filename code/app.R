@@ -1,5 +1,5 @@
 # Specify the packages of interest
-packages = c("shiny",
+packages = c("shiny","rStrava",
              "osmdata", "tidyverse",
              "sf","raster","rgdal","yaml","httr",
              "jsonlite","Thermimage",
