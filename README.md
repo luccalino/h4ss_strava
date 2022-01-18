@@ -2,13 +2,18 @@
 This repo is the working folder for the course assignment from Wan Ri Ho and Lucca Zachmann.
 
 # Project idea
-1. Get data from the Strava API :white_check_mark:
-2. Build simple shiny app to visualise spatial tracks :white_check_mark: 
-3. Publish the app and let loggers use it (:x: not yet achieved)
+:white_check_mark: Get data from the Strava API
+:white_check_mark: Build simple shiny app to visualise spatial tracks
+:x: Publish the app and let loggers use it (not yet achieved)
+
+# Input params from the user
+A Strava API needs to be set up prior to using the app. TO achieve this, login into your strava account at [https://www.strava.com](https://www.strava.com)
+After you’ve logged in, click on the arrow dropdown menu to the right of your profile picture and choose “settings” at [https://www.strava.com/settings/profile](https://www.strava.com/settings/profile).
+Then you will need to go to [https://www.strava.com/settings/api](https://www.strava.com/settings/api) to create an app.
+Here, there will be three things you need: 1) App name, 2) Client ID and 3) Client Secret for this app!
 
 # Features
 1. Data is called via online requests from [OpenStreetMap](https://de.wikipedia.org/wiki/OpenStreetMap) (no need to load any database)
 2. App can be used anywhere in the world
 3. English language only (can be easily extended)
 4. Riding and running activities (other actives can easily be included)
-
