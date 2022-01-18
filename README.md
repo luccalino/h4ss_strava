@@ -6,7 +6,7 @@ This repo is the working folder for the course assignment from Wan Ri Ho and Luc
 - :white_check_mark: Build simple shiny app to visualise spatial tracks
 - :x: Publish the app and let loggers use it (not yet achieved)
 
-# Input params from the user
+# Requirements (user-side)
 A Strava API needs to be set up prior to using the app. 
 - To achieve this, login into your strava account at [https://www.strava.com](https://www.strava.com)
 - After you’ve logged in, click on the arrow dropdown menu to the right of your profile picture and choose “settings” at [https://www.strava.com/settings/profile](https://www.strava.com/settings/profile).
