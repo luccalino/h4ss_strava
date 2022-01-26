@@ -1,24 +1,7 @@
-# Specify the packages of interest
-packages = c("shiny","rStrava",
-             "osmdata", "tidyverse",
-             "sf","raster","rgdal","yaml","httr",
-             "jsonlite","Thermimage",
-             "shinycssloaders","shinybusy")
-
-install.packages('devtools')
-devtools::install_github('fawda123/rStrava')
-
-
-# Load or install & load all
-package.check <- lapply(
-  packages,
-  FUN = function(x) {
-    if (!require(x, character.only = TRUE)) {
-      install.packages(x, dependencies = TRUE)
-      library(x, character.only = TRUE)
-    }
-  }
-)
+# Loading packages (install if not yet installed)
+if (!require("pacman")) install.packages("pacman")
+pacman::p_load(shiny, osmdata, dplyr, ggplot2, sf, raster, rgdal, yaml, 
+               httr,jsonlite,Thermimage,shinycssloaders,shinybusy)
 
 # rStrava
 packs <- as.data.frame(installed.packages())
